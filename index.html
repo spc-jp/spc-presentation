@@ -154,8 +154,8 @@
       .topbar { top: 0; margin: 0; border-radius: 0; border: none; border-bottom: 1px solid var(--border-subtle); }
     }
     .topbar .inner { width: 100%; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; }
-    .brand { display: flex; align-items: center; height: 100%; }
-    .logo-img { height: 48px; width: auto; object-fit: contain; }
+    .brand { display: flex; align-items: center; height: 100%; text-decoration: none; gap: 10px; }
+    /* .logo-img { height: 48px; width: auto; object-fit: contain; } */
 
     .nav { display: flex; gap: 6px; }
     .nav a {
@@ -421,7 +421,20 @@
   <div class="topbar">
     <div class="inner">
       <a href="#" class="brand">
-        <img src="rogo.jpg" alt="スマイルプラスコンサルティング" class="logo-img">
+        <!-- ロゴ画像の代わりにSVGアイコンを使用 -->
+        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="40" height="40" rx="12" fill="url(#grad_logo)"/>
+            <path d="M12 20C12 20 14 26 20 26C26 26 28 20 28 20" stroke="white" stroke-width="3" stroke-linecap="round"/>
+            <circle cx="15" cy="16" r="2" fill="white"/>
+            <circle cx="25" cy="16" r="2" fill="white"/>
+            <defs>
+            <linearGradient id="grad_logo" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#22D3EE"/>
+                <stop offset="1" stop-color="#0EA5E9"/>
+            </linearGradient>
+            </defs>
+        </svg>
+        <span style="font-weight:900; font-size:18px; color:#0F172A; letter-spacing:-0.02em;">Smile Plus</span>
       </a>
       <nav class="nav" aria-label="ページ内メニュー">
         <a href="#concept">コンセプト</a>
@@ -653,6 +666,7 @@
 
     const ContactForm = () => {
       const [showModal, setShowModal] = useState(false);
+      const [showToast, setShowToast] = useState(false);
       const emailTo = "spc@smileplusctg.com";
       const subject = "相談・依頼";
       const template = `相談テンプレ（コピペOK）
@@ -665,18 +679,43 @@
 （思考／365／実務／発信）`;
 
       const handleGmail = () => {
-        const gmailUrl = \`https://mail.google.com/mail/?view=cm&fs=1&to=\${emailTo}&su=\${encodeURIComponent(subject)}&body=\${encodeURIComponent(template)}\`;
+        const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${emailTo}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(template)}`;
         window.open(gmailUrl, '_blank');
       };
 
       const handleStandard = () => {
-        const mailtoUrl = \`mailto:\${emailTo}?subject=\${encodeURIComponent(subject)}&body=\${encodeURIComponent(template)}\`;
+        const mailtoUrl = `mailto:${emailTo}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(template)}`;
         window.location.href = mailtoUrl;
       };
 
       const copyToClipboard = () => {
-        navigator.clipboard.writeText(template);
-        alert("テンプレートをコピーしました");
+        // Fallback for environments where navigator.clipboard is blocked (e.g. iframes)
+        const textArea = document.createElement("textarea");
+        textArea.value = template;
+        
+        // Ensure the textarea is not visible but part of the DOM
+        textArea.style.position = "fixed";
+        textArea.style.left = "-9999px";
+        textArea.style.top = "0";
+        document.body.appendChild(textArea);
+        
+        textArea.focus();
+        textArea.select();
+        
+        try {
+          const successful = document.execCommand('copy');
+          if (successful) {
+            setShowToast(true);
+            setTimeout(() => setShowToast(false), 3000);
+          } else {
+            alert("コピーに失敗しました。手動でコピーしてください。");
+          }
+        } catch (err) {
+          console.error('Fallback: Oops, unable to copy', err);
+          alert("コピーに失敗しました。手動でコピーしてください。");
+        }
+        
+        document.body.removeChild(textArea);
       };
 
       return (
@@ -691,6 +730,40 @@
           textAlign: 'center',
           backdropFilter: 'blur(14px)'
         }}>
+          {/* Toast Notification */}
+          {showToast && (
+            <div style={{
+              position: 'fixed',
+              bottom: '40px',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              backgroundColor: '#0F172A',
+              color: '#fff',
+              padding: '12px 32px',
+              borderRadius: '99px',
+              boxShadow: '0 10px 30px rgba(0,0,0,0.2)',
+              zIndex: 10000,
+              fontSize: '14px',
+              fontWeight: '700',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              animation: 'fadeIn 0.3s ease-out'
+            }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{color:'#22D3EE'}}>
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              テンプレートをコピーしました
+            </div>
+          )}
+          
+          <style>{`
+            @keyframes fadeIn {
+              from { opacity: 0; transform: translate(-50%, 20px); }
+              to { opacity: 1; transform: translate(-50%, 0); }
+            }
+          `}</style>
+          
           <div style={{
             position:'absolute', inset:0, borderRadius:'32px', padding:'3px',
             background:'linear-gradient(135deg, rgba(34,211,238,1) 0%, rgba(14,165,233,1) 55%, rgba(167,243,208,1) 120%)',
