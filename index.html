@@ -57,19 +57,20 @@
             <span class="inline-block py-1 px-3 rounded-full bg-blue-100 text-blue-800 text-sm font-medium mb-6 animate-pulse">
                 中小企業経営者・士業の方へ
             </span>
-            <!-- フォントサイズを大きくし、太さをextraboldに変更してインパクトを強化 -->
-            <h1 class="text-3xl md:text-5xl lg:text-7xl font-extrabold leading-tight mb-8 text-slate-900 tracking-tight">
-                何から始めればいいか分からない。<br>
+            <!-- 文節改行対策：inline-blockで囲むことで、単語の途中での改行を防ぎます -->
+            <h1 class="text-3xl md:text-5xl lg:text-7xl font-extrabold leading-snug mb-8 text-slate-900 tracking-tight">
+                <span class="inline-block">何から始めればいいか</span><span class="inline-block">分からない。</span><br class="hidden md:block">
                 <span class="gradient-text inline-block mt-2">それ、<span class="border-b-4 border-orange-400">普通です</span></span>
             </h1>
-            <!-- leading-relaxed を追加し、こちらの行間も少しゆとりを持たせました -->
+            
+            <!-- 文節改行対策：ここも同様にスマホでの読みやすさを考慮 -->
             <p class="text-lg md:text-xl text-slate-600 mb-4 max-w-2xl mx-auto leading-relaxed">
-                AIもDXも気になる。でも情報が多すぎて、結局動けない。<br>
-                そんな方のための<strong class="text-slate-900">“整理から始める”実務</strong>サポートです。
+                <span class="inline-block">AIもDXも気になる。</span><span class="inline-block">でも情報が多すぎて、</span><span class="inline-block">結局動けない。</span><br class="hidden md:block">
+                <span class="inline-block">そんな方のための</span><strong class="text-slate-900 inline-block">“整理から始める”実務</strong><span class="inline-block">サポートです。</span>
             </p>
             <p class="text-md text-slate-500 mb-10 max-w-xl mx-auto italic">
-                多くの中小企業や士業の方が、同じ場所で立ち止まっています。<br>
-                ここは、そんなあなたのための場所です。
+                <span class="inline-block">多くの中小企業や士業の方が、</span><span class="inline-block">同じ場所で立ち止まっています。</span><br class="hidden md:block">
+                <span class="inline-block">ここは、そんなあなたのための場所です。</span>
             </p>
             
             <div class="flex flex-col items-center">
@@ -88,7 +89,9 @@
     <section class="py-20 bg-white">
         <div class="container mx-auto px-6">
             <div class="text-center mb-16">
-                <h2 class="text-2xl md:text-3xl font-bold text-slate-900 mb-4">なぜ、優秀なあなたが「動けない」のか？</h2>
+                <h2 class="text-2xl md:text-3xl font-bold text-slate-900 mb-4">
+                    <span class="inline-block">なぜ、優秀なあなたが</span><span class="inline-block">「動けない」のか？</span>
+                </h2>
                 <div class="w-16 h-1 bg-orange-400 mx-auto rounded"></div>
             </div>
 
@@ -117,13 +120,13 @@
                 </div>
                 <div class="order-1 md:order-2">
                     <p class="text-lg leading-relaxed mb-6">
-                        能力が足りないわけでも、やる気がないわけでもありません。<br>
-                        問題はあなたの能力ではなく、<br>
-                        <span class="font-bold text-blue-600 text-xl bg-blue-50 px-2 py-1 rounded">「整理されていないこと」</span>にあるのです。
+                        <span class="inline-block">能力が足りないわけでも、</span><span class="inline-block">やる気がないわけでもありません。</span><br class="hidden md:block">
+                        <span class="inline-block">問題はあなたの能力ではなく、</span><br class="hidden md:block">
+                        <span class="font-bold text-blue-600 text-xl bg-blue-50 px-2 py-1 rounded inline-block">「整理されていないこと」</span><span class="inline-block">にあるのです。</span>
                     </p>
                     <p class="text-slate-600">
-                        情報過多の現代、一人ですべてを整理するのは不可能です。<br>
-                        だからこそ、思考の整理から始めましょう。
+                        <span class="inline-block">情報過多の現代、</span><span class="inline-block">一人ですべてを整理するのは不可能です。</span><br class="hidden md:block">
+                        <span class="inline-block">だからこそ、</span><span class="inline-block">思考の整理から始めましょう。</span>
                     </p>
                 </div>
             </div>
