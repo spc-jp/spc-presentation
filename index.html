@@ -1,852 +1,366 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>未来を、プラスに。｜スマイルプラスコンサルティング</title>
-  <meta name="description" content="スマイルプラスコンサルティング。AIは答えを出す道具ではなく、考える時間を一緒につくる相棒です。" />
-
-  <!-- React & ReactDOM -->
-  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-  <!-- Babel -->
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <!-- Tailwind CSS (Preflight無効化で既存CSSと共存) -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      corePlugins: {
-        preflight: false,
-      }
-    }
-  </script>
-
-  <!-- Google Fonts: Noto Sans JP -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
-
-  <style>
-    :root {
-      /* Concept */
-      --bg: #F7FCFF;
-      --text-main: #0F172A;
-      --text-muted: #475569;
-
-      /* Miyako Blue accent */
-      --miyako1: #22D3EE;
-      --miyako2: #0EA5E9;
-      --miyako3: #A7F3D0;
-
-      /* Gradients (落ち着き寄り) */
-      --grad-main: linear-gradient(135deg, #22D3EE 0%, #0EA5E9 55%, #A7F3D0 110%);
-      --grad-text: linear-gradient(135deg, #0EA5E9 0%, #22D3EE 45%, #1E40AF 120%);
-
-      /* Glass */
-      --bg-glass: rgba(255, 255, 255, 0.72);
-      --bg-glass-strong: rgba(255, 255, 255, 0.86);
-
-      --border-glass: rgba(15, 23, 42, 0.10);
-      --border-subtle: rgba(15, 23, 42, 0.06);
-
-      --shadow-sm: 0 4px 10px rgba(15, 23, 42, 0.06);
-      --shadow-card: 0 22px 44px -22px rgba(2, 132, 199, 0.20);
-
-      --radius: 24px;
-      --max-w: 1080px;
-      --header-height: 70px;
-
-      /* Background photo (水平線：宮古ブルー系) */
-      --bg-photo: url("https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=2400&q=60");
-      /* 白ベール（濃いほど読みやすい、薄いほど写真が見える） */
-      --bg-photo-overlay: rgba(247, 252, 255, 0.86);
-
-      /* Grid color */
-      --grid: rgba(2, 132, 199, 0.06);
-    }
-
-    html { scroll-behavior: smooth; }
-
-    body {
-      margin: 0;
-      font-family: 'Noto Sans JP', ui-sans-serif, system-ui, sans-serif;
-      color: var(--text-main);
-      line-height: 1.8;
-      -webkit-font-smoothing: antialiased;
-      overflow-x: hidden;
-      position: relative;
-
-      background-color: var(--bg);
-      background-image:
-        linear-gradient(180deg, var(--bg-photo-overlay) 0%, var(--bg-photo-overlay) 100%),
-        var(--bg-photo);
-      background-size: cover;
-      background-position: center;
-      background-attachment: fixed;
-    }
-
-    /* 背景：薄いグリッド（構造感＝コンサル感） */
-    body::before{
-      content:'';
-      position:fixed;
-      inset:0;
-      z-index:-1;
-      pointer-events:none;
-      background-image:
-        linear-gradient(to right, var(--grid) 1px, transparent 1px),
-        linear-gradient(to bottom, var(--grid) 1px, transparent 1px);
-      background-size: 52px 52px;
-      mask-image: radial-gradient(
-        circle at 50% 18%,
-        rgba(0,0,0,0.85),
-        rgba(0,0,0,0.25) 55%,
-        rgba(0,0,0,0) 80%
-      );
-      opacity: 0.55;
-    }
-
-    /* 背景：海の光だまり（抽象） */
-    body::after{
-      content:'';
-      position:fixed;
-      width:72vw;
-      height:72vw;
-      right:-26%;
-      bottom:-30%;
-      border-radius:50%;
-      filter: blur(95px);
-      background:
-        radial-gradient(
-          circle at 45% 45%,
-          rgba(34, 211, 238, 0.18),
-          rgba(14, 165, 233, 0.16),
-          rgba(167, 243, 208, 0.14),
-          rgba(255,255,255,0) 72%
-        );
-      z-index:-2;
-      pointer-events:none;
-    }
-
-    .container { max-width: var(--max-w); margin: 0 auto; padding: 0 24px; }
-    section { padding: 80px 0; }
-
-    /* Header */
-    .topbar {
-      position: sticky;
-      top: 20px;
-      margin: 0 20px;
-      border-radius: 99px;
-      z-index: 100;
-      background: rgba(255, 255, 255, 0.78);
-      backdrop-filter: blur(16px);
-      border: 1px solid var(--border-subtle);
-      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
-      height: var(--header-height);
-      display: flex;
-      align-items: center;
-      max-width: calc(var(--max-w) + 40px);
-      left: 0;
-      right: 0;
-      margin-left: auto;
-      margin-right: auto;
-    }
-    @media (max-width: 768px) {
-      .topbar { top: 0; margin: 0; border-radius: 0; border: none; border-bottom: 1px solid var(--border-subtle); }
-    }
-    .topbar .inner { width: 100%; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; }
-    .brand { display: flex; align-items: center; height: 100%; text-decoration: none; gap: 10px; }
-    .logo-img { height: 48px; width: auto; object-fit: contain; }
-
-    .nav { display: flex; gap: 6px; }
-    .nav a {
-      text-decoration: none;
-      color: var(--text-muted);
-      font-size: 13px;
-      font-weight: 700;
-      padding: 8px 16px;
-      border-radius: 99px;
-      transition: all 0.25s ease;
-      white-space: nowrap;
-    }
-    .nav a:hover { color: #0EA5E9; background: rgba(14,165,233,0.08); }
-
-    @media (max-width: 900px) {
-      .topbar .inner { flex-direction: column; align-items: flex-start; gap: 12px; padding: 12px; height: auto; }
-      .topbar { height: auto; }
-      .logo-img { height: 40px; }
-      .nav { width: 100%; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; mask-image: linear-gradient(to right, black 90%, transparent 100%); }
-    }
-
-    /* Hero */
-    .hero { padding: 80px 0 60px; display: flex; justify-content: center; }
-    .hero-main {
-      background: var(--bg-glass-strong);
-      backdrop-filter: blur(18px);
-      border-radius: var(--radius);
-      padding: 64px 48px;
-      box-shadow: var(--shadow-card);
-      border: 1px solid var(--border-subtle);
-      position: relative;
-      overflow: hidden;
-      width: 100%;
-      max-width: 900px;
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    .hero-main::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 6px; background: var(--grad-main); }
-
-    .tagline {
-      display: inline-block;
-      font-size: 14px;
-      font-weight: 800;
-      color: #fff;
-      background: linear-gradient(135deg, rgba(14,165,233,1) 0%, rgba(34,211,238,1) 55%, rgba(167,243,208,1) 120%);
-      padding: 8px 20px;
-      border-radius: 99px;
-      margin-bottom: 32px;
-      letter-spacing: 0.05em;
-      box-shadow: 0 10px 22px -12px rgba(2,132,199,0.55);
-    }
-    h1 {
-      margin: 0 0 28px;
-      font-size: 48px;
-      font-weight: 900;
-      line-height: 1.25;
-      letter-spacing: -0.02em;
-      background: linear-gradient(to bottom right, #0F172A, #334155);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    .lead { font-size: 20px; color: var(--text-main); margin-bottom: 28px; font-weight: 600; }
-    .sublead { font-size: 16px; color: var(--text-muted); margin-bottom: 44px; }
-
-    .btn-row { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 16px 32px;
-      border-radius: 99px;
-      font-weight: 800;
-      font-size: 16px;
-      text-decoration: none;
-      transition: all 0.25s;
-      cursor: pointer;
-      border: none;
-      position: relative;
-      overflow: hidden;
-      z-index: 1;
-    }
-    .btn:active { transform: scale(0.98); }
-    .btn-primary {
-      color: #fff;
-      background-size: 200% auto;
-      background-image: var(--grad-main);
-      box-shadow: 0 14px 26px -14px rgba(2,132,199,0.60);
-    }
-    .btn-primary:hover { background-position: right center; transform: translateY(-2px); box-shadow: 0 18px 34px -16px rgba(2,132,199,0.70); }
-    .btn-secondary {
-      background: rgba(255,255,255,0.82);
-      color: var(--text-main);
-      border: 1px solid var(--border-subtle);
-      box-shadow: 0 8px 18px rgba(15,23,42,0.06);
-    }
-    .btn-secondary:hover { background: rgba(255,255,255,0.95); transform: translateY(-2px); }
-
-    @media (max-width: 900px) { h1 { font-size: 32px; } .hero-main { padding: 40px 24px; } }
-
-    /* Sections */
-    .section-header { margin-bottom: 40px; text-align: center; }
-    .section-title {
-      font-size: 28px;
-      font-weight: 900;
-      margin: 0 0 16px;
-      display: inline-block;
-      background: var(--grad-text);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      position: relative;
-    }
-    .section-title::after { content: ''; display: block; width: 44px; height: 4px; background: var(--grad-main); margin: 10px auto 0; border-radius: 2px; }
-    .section-desc { color: var(--text-muted); font-size: 15px; max-width: 720px; margin: 0 auto; }
-
-    /* Map */
-    .map-container {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 24px;
-      flex-wrap: wrap;
-      background: rgba(255,255,255,0.55);
-      border: 1px solid var(--border-subtle);
-      padding: 40px;
-      border-radius: var(--radius);
-      backdrop-filter: blur(10px);
-      box-shadow: 0 18px 40px -26px rgba(2,132,199,0.25);
-    }
-    .map-node {
-      background: rgba(255,255,255,0.92);
-      color: var(--text-main);
-      border: 1px solid var(--border-subtle);
-      padding: 16px 24px;
-      border-radius: 16px;
-      font-weight: 900;
-      font-size: 15px;
-      text-align: center;
-      box-shadow: 0 10px 20px rgba(15,23,42,0.05);
-      transition: transform 0.25s;
-    }
-    .map-node:hover { transform: translateY(-3px); }
-    .map-node.root {
-      background: var(--grad-main);
-      color: white;
-      border: none;
-      box-shadow: 0 14px 26px -14px rgba(2,132,199,0.60);
-    }
-
-    .map-branches {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-      justify-content: center;
-      width: 100%;
-      max-width: 800px;
-    }
-    @media (max-width: 768px) {
-      .map-container { flex-direction: column; }
-      .map-branches { grid-template-columns: repeat(2, 1fr); width: 100%; }
-      .map-node { width: 100%; box-sizing: border-box; }
-    }
-    @media (max-width: 480px) { .map-branches { grid-template-columns: 1fr; } }
-
-    /* Grids */
-    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; }
-    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
-    @media (max-width: 900px) { .grid-3 { grid-template-columns: repeat(2, 1fr); } }
-    @media (max-width: 600px) { .grid-3 { grid-template-columns: 1fr; } }
-
-    /* Cards (Glass) */
-    .card {
-      background: var(--bg-glass);
-      backdrop-filter: blur(12px);
-      border: 1px solid var(--border-subtle);
-      border-radius: 20px;
-      padding: 32px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      transition: all 0.25s;
-      box-shadow: var(--shadow-sm);
-    }
-    .card:hover {
-      transform: translateY(-8px);
-      background: rgba(255,255,255,0.90);
-      border-color: rgba(14,165,233,0.22);
-      box-shadow: 0 26px 60px -34px rgba(2,132,199,0.28);
-    }
-    .card-head { padding-bottom: 16px; border-bottom: 1px solid rgba(15,23,42,0.06); margin-bottom: 8px; min-height: 96px; display: flex; flex-direction: column; }
-    .card-title { margin: 0; font-size: 18px; font-weight: 900; background: linear-gradient(90deg, #0F172A, #334155); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .card-target { margin-top: 8px; font-size: 13px; color: var(--text-muted); }
-    .check-list li { position: relative; padding-left: 28px; margin-bottom: 10px; font-size: 15px; color: #334155; }
-    .check-list li::before { content: '✦'; position: absolute; left: 0; color: #0EA5E9; font-size: 14px; top: 3px; }
-    .card-footer { font-size: 12px; color: var(--text-muted); background: rgba(15,23,42,0.04); padding: 12px; border-radius: 12px; margin-top: auto; }
-
-    /* Feature Cards */
-    .feature-card {
-      background: rgba(255,255,255,0.90);
-      padding: 24px 16px;
-      border-radius: 20px;
-      border: 1px solid var(--border-subtle);
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 12px;
-      transition: transform 0.25s;
-      box-shadow: var(--shadow-sm);
-      backdrop-filter: blur(10px);
-    }
-    .feature-card:hover { transform: translateY(-4px); box-shadow: 0 18px 40px -28px rgba(2,132,199,0.25); }
-
-    .feature-icon {
-      width: 54px;
-      height: 54px;
-      background: linear-gradient(135deg, rgba(34,211,238,0.22) 0%, rgba(14,165,233,0.18) 55%, rgba(167,243,208,0.22) 120%);
-      color: #0EA5E9;
-      border-radius: 18px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 8px;
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.7);
-    }
-    .feature-title { font-weight: 800; font-size: 16px; margin: 0; color: #0F172A; }
-    .feature-desc { font-size: 13px; color: var(--text-muted); margin: 0; line-height: 1.6; font-feature-settings: "palt"; letter-spacing: -0.02em; }
-
-    /* Position Section */
-    .hero-sub {
-      border: 1px solid var(--border-subtle);
-      box-shadow: var(--shadow-sm);
-      background: rgba(255,255,255,0.82);
-      align-items: flex-start;
-      text-align: left;
-      padding: 32px;
-      border-radius: var(--radius);
-      backdrop-filter: blur(12px);
-    }
-    .hero-sub h3 { font-size: 20px; margin: 0 0 16px; font-weight: 900; color: #0F172A; }
-
-    .footer {
-      text-align: center;
-      padding: 60px 0;
-      color: var(--text-muted);
-      font-size: 13px;
-      border-top: 1px solid rgba(15,23,42,0.06);
-      margin-top: 60px;
-      background: rgba(255,255,255,0.55);
-      backdrop-filter: blur(10px);
-    }
-
-    .icon { width: 22px; height: 22px; stroke-width: 2; }
-
-  </style>
-</head>
-
-<body>
-
-  <!-- Top Bar -->
-  <div class="topbar">
-    <div class="inner">
-      <a href="#" class="brand">
-        <img src="rogo.jpg" alt="Smile Plus Consulting" class="logo-img">
-      </a>
-      <nav class="nav" aria-label="ページ内メニュー">
-        <a href="#concept">コンセプト</a>
-        <a href="#map">全体像</a>
-        <a href="#series">サービス</a>
-        <a href="#position">立ち位置</a>
-        <a href="#scenes">活用シーン</a>
-        <a href="#contact">相談・依頼</a>
-      </nav>
-    </div>
-  </div>
-
-  <div class="container">
-
-    <!-- Hero Section -->
-    <section class="hero" id="top">
-      <div class="hero-main">
-        <span class="tagline">Future with Smile Plus</span>
-        <h1>未来を、プラスに。<br>考えるを、ひとりにしない。</h1>
-        <p class="lead">
-          AIは答えを出す道具ではありません。<br>
-          「考える時間」を、一緒につくる相棒です。
-        </p>
-        <p class="sublead">
-          経営、仕事、発信。頭の中で考えているのに言葉にならない。<br>
-          そんな「ひとりで抱える時間」を、AIと一緒に「進む時間」へ変えていきます。
-        </p>
-
-        <div class="btn-row">
-          <a class="btn btn-primary" href="#map">
-            全体像を見る
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="stroke-width:3;"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
-          </a>
-          <a class="btn btn-secondary" href="#contact">相談してみる</a>
-        </div>
-      </div>
-    </section>
-
-    <!-- Concept -->
-    <section id="concept">
-      <div class="section-header">
-        <h2 class="section-title">コンセプト</h2>
-        <p class="section-desc">
-          「考えるを、ひとりにしない」。<br>
-          ひとりで抱えがちなモヤっとした迷い、未整理な思考を、AIとの対話で言葉にしていく。<br>
-          それが「スマイルプラス」の提供価値です。
-        </p>
-      </div>
-    </section>
-
-    <!-- Map -->
-    <section id="map">
-      <div class="section-header">
-        <h2 class="section-title">全体像</h2>
-        <p class="section-desc">思考の流れに合わせたシリーズ展開です。今の課題に合わせて選ぶことができます。</p>
-      </div>
-      <div class="map-container">
-        <div class="map-node root">Smile Plus<br>Consulting</div>
-        <div class="map-arrow">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-        </div>
-        <div class="map-branches">
-          <div class="map-node">思考<br><span style="font-size:12px; font-weight:normal; color:#475569;">整える</span></div>
-          <div class="map-node">365<br><span style="font-size:12px; font-weight:normal; color:#475569;">続ける</span></div>
-          <div class="map-node">実務<br><span style="font-size:12px; font-weight:normal; color:#475569;">進める</span></div>
-          <div class="map-node">発信<br><span style="font-size:12px; font-weight:normal; color:#475569;">伝える</span></div>
-          <div class="map-node">共創<br><span style="font-size:12px; font-weight:normal; color:#475569;">つなぐ</span></div>
-          <div class="map-node">振り返り<br><span style="font-size:12px; font-weight:normal; color:#475569;">深める</span></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Series Grid -->
-    <section id="series">
-      <div class="section-header">
-        <h2 class="section-title">各シリーズの役割</h2>
-      </div>
-      <div class="grid-3">
-        <div class="card">
-          <div class="card-head">
-            <h3 class="card-title">思考シリーズ｜整える</h3>
-            <p class="card-target">課題：考えが散らかっている / 論点が分からない</p>
-          </div>
-          <ul class="check-list"><li>モヤっとが言葉になる</li><li>問いが見えてくる</li><li>考え始められる</li></ul>
-          <div class="card-footer">代表例：Thinking Switch</div>
-        </div>
-
-        <div class="card">
-          <div class="card-head">
-            <h3 class="card-title">365シリーズ｜続ける</h3>
-            <p class="card-target">課題：忙しくて考える時間がない / 続かない</p>
-          </div>
-          <ul class="check-list"><li>1日1テーマで考えられる</li><li>思考が積み上がる</li><li>無理なく習慣になる</li></ul>
-          <div class="card-footer">代表例：Mirai365</div>
-        </div>
-
-        <div class="card">
-          <div class="card-head">
-            <h3 class="card-title">実務シリーズ｜進める</h3>
-            <p class="card-target">課題：仕事に落とせない / 提案が属人化している</p>
-          </div>
-          <ul class="check-list"><li>考えが成果に変わる</li><li>再現性が生まれる</li><li>説明が楽になる</li></ul>
-          <div class="card-footer">代表例：SOW整理ノート、提案設計ノート</div>
-        </div>
-
-        <div class="card">
-          <div class="card-head">
-            <h3 class="card-title">発信シリーズ｜伝える</h3>
-            <p class="card-target">課題：想いはあるが伝わらない / 文章に自信がない</p>
-          </div>
-          <ul class="check-list"><li>伝わる言葉になる</li><li>読み手が見える</li><li>発信が楽になる</li></ul>
-          <div class="card-footer">代表例：発信スイッチ、文章整形ノート</div>
-        </div>
-
-        <div class="card">
-          <div class="card-head">
-            <h3 class="card-title">共創シリーズ｜つなぐ</h3>
-            <p class="card-target">課題：自分では整理できたが、人に伝えるとズレる / 合意形成が難しい</p>
-          </div>
-          <ul class="check-list"><li>考えが共有される</li><li>認識がそろう</li><li>話し合いが前に進む</li></ul>
-          <div class="card-footer">代表例：対話整理ノート、面談コンパス、未来共有シート</div>
-        </div>
-
-        <div class="card">
-          <div class="card-head">
-            <h3 class="card-title">振り返りシリーズ｜深める</h3>
-            <p class="card-target">課題：やったのに残らない / 学びが蓄積されない / 次に活かせない</p>
-          </div>
-          <ul class="check-list"><li>経験が言葉になる</li><li>判断の質が上がる</li><li>次の思考が速くなる</li></ul>
-          <div class="card-footer">代表例：意思決定ログ、気づき蓄積365、振り返りノート</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Position -->
-    <section id="position">
-      <div class="section-header">
-        <h2 class="section-title">私たちの立ち位置</h2>
-      </div>
-      <div class="grid-2">
-        <div class="hero-sub">
-          <div class="feature-icon">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path></svg>
-          </div>
-          <h3>ツール売りではありません</h3>
-          <p>AIツールを売っているわけでも、アプリをただ並べたいわけでもありません。
-          「考える時間」と「考え続けられる仕組み」を、一緒につくるパートナーです。</p>
-        </div>
-        <div class="hero-sub">
-          <div class="feature-icon">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg>
-          </div>
-          <h3>入口から成果まで</h3>
-          <p>思考の入口は「整える」、続ける仕組みが「365」、仕事に落とすのが「実務」、外へ出すのが「発信」。
-          フェーズを分けているから、迷わずに早く進みます。</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- Scenes -->
-    <section id="scenes">
-      <div class="section-header">
-        <h2 class="section-title">活用シーン</h2>
-      </div>
-      <div class="grid-3">
-        <div class="feature-card">
-          <div class="feature-icon">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
-          </div>
-          <p class="feature-title">商談前の整理</p>
-          <p class="feature-desc">話す前に、論点と伝える順番が整います。</p>
-        </div>
-
-        <div class="feature-card">
-          <div class="feature-icon">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-          </div>
-          <p class="feature-title">提案書づくり</p>
-          <p class="feature-desc">提案の骨組みが揃い、説明が楽になります。</p>
-        </div>
-
-        <div class="feature-card">
-          <div class="feature-icon">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-          </div>
-          <p class="feature-title">経営の壁打ち</p>
-          <p class="feature-desc">迷いを言語化し、次の一手が見えます。</p>
-        </div>
-
-        <div class="feature-card">
-          <div class="feature-icon">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-          </div>
-          <p class="feature-title">発信前の言語化</p>
-          <p class="feature-desc">想いを、読み手に届く言葉へ翻訳します。</p>
-        </div>
-
-        <div class="feature-card">
-          <div class="feature-icon">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line></svg>
-          </div>
-          <p class="feature-title">仕組み化・再現性</p>
-          <p class="feature-desc">考え方を型にして、属人化を解消します。</p>
-        </div>
-
-        <div class="feature-card">
-          <div class="feature-icon">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
-          </div>
-          <p class="feature-title">伴走支援</p>
-          <p class="feature-desc">考える時間を守り、続ける設計を組みます。</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- React Contact Section -->
-    <section id="contact">
-      <div id="contact-root"></div>
-    </section>
-
-    <div class="footer">
-      <p>&copy; 2024 Smile Plus Consulting. All rights reserved.</p>
-    </div>
-  </div>
-
-  <!-- React Logic -->
-  <script type="text/babel">
-    const { useState } = React;
-
-    const ContactForm = () => {
-      const [showModal, setShowModal] = useState(false);
-      const [showToast, setShowToast] = useState(false);
-      const emailTo = "spc@smileplusctg.com";
-      const subject = "相談・依頼";
-      const template = `相談テンプレ（コピペOK）
-1 いま困っていること：
-2 現状の状況：
-3 こうなったら嬉しい：
-4 期限や優先度：
-5 参考URLや資料（あれば）：
-6 最初はどこから一緒に整えたいか：
-（思考／365／実務／発信）`;
-
-      const handleGmail = () => {
-        const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${emailTo}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(template)}`;
-        window.open(gmailUrl, '_blank');
-      };
-
-      const handleStandard = () => {
-        const mailtoUrl = `mailto:${emailTo}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(template)}`;
-        window.location.href = mailtoUrl;
-      };
-
-      const copyToClipboard = () => {
-        // Fallback for environments where navigator.clipboard is blocked (e.g. iframes)
-        const textArea = document.createElement("textarea");
-        textArea.value = template;
-        
-        // Ensure the textarea is not visible but part of the DOM
-        textArea.style.position = "fixed";
-        textArea.style.left = "-9999px";
-        textArea.style.top = "0";
-        document.body.appendChild(textArea);
-        
-        textArea.focus();
-        textArea.select();
-        
-        try {
-          const successful = document.execCommand('copy');
-          if (successful) {
-            setShowToast(true);
-            setTimeout(() => setShowToast(false), 3000);
-          } else {
-            alert("コピーに失敗しました。手動でコピーしてください。");
-          }
-        } catch (err) {
-          console.error('Fallback: Oops, unable to copy', err);
-          alert("コピーに失敗しました。手動でコピーしてください。");
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>思考整理×実務AIサポート | Smile Plus Consulting</title>
+    <link rel="icon" href="spcファビコン.jpg">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            scroll-behavior: smooth;
         }
+        .gradient-text {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero-bg {
+            background-color: #f8fafc;
+            background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+        .blob {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 50%;
+            filter: blur(40px);
+            z-index: 0;
+        }
+    </style>
+</head>
+<body class="text-slate-700 bg-white">
+
+    <!-- Header -->
+    <header class="fixed w-full bg-white/90 backdrop-blur-sm z-50 border-b border-slate-100">
+        <div class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <a href="#" class="block">
+                <img src="rogo.jpg" alt="Smile Plus Consulting" class="h-10 md:h-14 w-auto object-contain">
+            </a>
+            <a href="#contact" class="hidden md:inline-block px-6 py-2 bg-slate-800 text-white rounded-full text-sm hover:bg-slate-700 transition duration-300">
+                相談してみる
+            </a>
+        </div>
+    </header>
+
+    <!-- 1. Hero / Empathy Zone -->
+    <section class="relative pt-32 pb-20 md:pt-40 md:pb-32 hero-bg overflow-hidden">
+        <div class="blob top-0 left-0"></div>
+        <div class="blob bottom-0 right-0 bg-orange-100"></div>
         
-        document.body.removeChild(textArea);
-      };
-
-      return (
-        <div className="cta-box" style={{
-          background: 'rgba(255,255,255,0.86)',
-          border: '1px solid rgba(15,23,42,0.06)',
-          borderRadius: '32px',
-          padding: '60px 40px',
-          boxShadow: '0 22px 44px -22px rgba(2,132,199,0.20)',
-          position: 'relative',
-          overflow: 'hidden',
-          textAlign: 'center',
-          backdropFilter: 'blur(14px)'
-        }}>
-          {/* Toast Notification */}
-          {showToast && (
-            <div style={{
-              position: 'fixed',
-              bottom: '40px',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              backgroundColor: '#0F172A',
-              color: '#fff',
-              padding: '12px 32px',
-              borderRadius: '99px',
-              boxShadow: '0 10px 30px rgba(0,0,0,0.2)',
-              zIndex: 10000,
-              fontSize: '14px',
-              fontWeight: '700',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              animation: 'fadeIn 0.3s ease-out'
-            }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{color:'#22D3EE'}}>
-                <polyline points="20 6 9 17 4 12"></polyline>
-              </svg>
-              テンプレートをコピーしました
+        <div class="container mx-auto px-6 relative z-10 text-center">
+            <span class="inline-block py-1 px-3 rounded-full bg-blue-100 text-blue-800 text-sm font-medium mb-6 animate-pulse">
+                中小企業経営者・士業の方へ
+            </span>
+            <h1 class="text-3xl md:text-5xl lg:text-6xl font-bold leading-tight mb-8 text-slate-900">
+                何から始めればいいか分からない。<br>
+                <span class="gradient-text">それ、普通です🙂</span>
+            </h1>
+            <p class="text-lg md:text-xl text-slate-600 mb-4 max-w-2xl mx-auto">
+                AIもDXも気になる。でも情報が多すぎて動けない。<br>
+                そんな方のための<strong class="text-slate-900">“思考整理×実務AI”</strong>サポートです。
+            </p>
+            <p class="text-md text-slate-500 mb-10 max-w-xl mx-auto italic">
+                多くの中小企業や士業の方が、同じ場所で立ち止まっています。<br>
+                ここは、そんなあなたのための場所です。
+            </p>
+            
+            <div class="flex flex-col items-center">
+                <p class="text-2xl font-bold text-slate-800 mb-6 tracking-widest">
+                    「考えるを、ひとりにしない」
+                </p>
+                <a href="#contact" class="inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white transition-all duration-200 bg-orange-500 rounded-full hover:bg-orange-600 hover:shadow-lg hover:-translate-y-1 group">
+                    まずは今の状態を整理してみる（無料）
+                    <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                </a>
             </div>
-          )}
-          
-          <style>{`
-            @keyframes fadeIn {
-              from { opacity: 0; transform: translate(-50%, 20px); }
-              to { opacity: 1; transform: translate(-50%, 0); }
-            }
-          `}</style>
-          
-          <div style={{
-            position:'absolute', inset:0, borderRadius:'32px', padding:'3px',
-            background:'linear-gradient(135deg, rgba(34,211,238,1) 0%, rgba(14,165,233,1) 55%, rgba(167,243,208,1) 120%)',
-            WebkitMask:'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
-            WebkitMaskComposite:'xor', maskComposite:'exclude', pointerEvents:'none'
-          }}></div>
+        </div>
+    </section>
 
-          <div style={{ maxWidth: '600px', margin: '0 auto' }}>
-            <h2 className="section-title">相談・依頼</h2>
-            <p className="section-desc" style={{ marginBottom: '32px' }}>
-              まずは、相談してみたい。<br/>
-              自社用にカスタマイズしたい、業務委託として伴走してほしい。<br/>
-              「考える」環境づくりから、ご一緒します。
+    <!-- 2. The Identity of Confusion -->
+    <section class="py-20 bg-white">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-2xl md:text-3xl font-bold text-slate-900 mb-4">なぜ、優秀なあなたが「動けない」のか？</h2>
+                <div class="w-16 h-1 bg-orange-400 mx-auto rounded"></div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-12 items-center max-w-5xl mx-auto">
+                <div class="order-2 md:order-1">
+                    <div class="bg-slate-50 p-8 rounded-2xl border border-slate-100 shadow-sm">
+                        <ul class="space-y-4">
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle text-slate-400 mt-1 mr-3"></i>
+                                <span>AIツールの選び方が分からない</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle text-slate-400 mt-1 mr-3"></i>
+                                <span>資料がバラバラで探せない</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle text-slate-400 mt-1 mr-3"></i>
+                                <span>考えがまとまらない</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle text-slate-400 mt-1 mr-3"></i>
+                                <span>専門的なことを相談できる相手がいない</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="order-1 md:order-2">
+                    <p class="text-lg leading-relaxed mb-6">
+                        能力が足りないわけでも、やる気がないわけでもありません。<br>
+                        問題はあなたの能力ではなく、<br>
+                        <span class="font-bold text-blue-600 text-xl bg-blue-50 px-2 py-1 rounded">「整理されていないこと」</span>にあるのです。
+                    </p>
+                    <p class="text-slate-600">
+                        情報過多の現代、一人ですべてを整理するのは不可能です。<br>
+                        だからこそ、思考の整理から始めましょう。
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. Assets to Treasure -->
+    <section class="py-20 bg-slate-900 text-white">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-12">
+                <h2 class="text-2xl md:text-3xl font-bold mb-4">今ある資産が「宝」になる</h2>
+                <p class="text-slate-300">URL、PDF、社内資料、議事録、メモ…<br>これらはすべて、あなたのビジネスを加速させる「眠っている資産」です。</p>
+            </div>
+
+            <div class="grid md:grid-cols-11 gap-4 max-w-6xl mx-auto items-center">
+                
+                <!-- Before -->
+                <div class="md:col-span-5 bg-slate-800 p-8 rounded-2xl border border-slate-700">
+                    <h3 class="text-xl font-bold text-slate-400 mb-6 text-center">Before: 眠っている状態</h3>
+                    <div class="flex justify-center space-x-4 mb-6 opacity-60">
+                        <i class="far fa-file-pdf text-4xl"></i>
+                        <i class="far fa-file-word text-4xl"></i>
+                        <i class="far fa-sticky-note text-4xl"></i>
+                    </div>
+                    <ul class="space-y-3 text-slate-300">
+                        <li class="flex items-center"><i class="fas fa-times text-red-400 mr-2 w-5"></i> 探すのに時間がかかる</li>
+                        <li class="flex items-center"><i class="fas fa-times text-red-400 mr-2 w-5"></i> 属人化している</li>
+                        <li class="flex items-center"><i class="fas fa-times text-red-400 mr-2 w-5"></i> バラバラで使えない</li>
+                    </ul>
+                </div>
+
+                <!-- Arrow -->
+                <div class="md:col-span-1 flex justify-center py-4 md:py-0">
+                    <div class="flex flex-col items-center text-orange-400 font-bold">
+                        <span class="text-sm mb-2">AIで整理</span>
+                        <i class="fas fa-arrow-down md:rotate-270 md:fa-arrow-right text-3xl animate-bounce"></i>
+                        <span class="text-sm mt-2">アプリで保存</span>
+                    </div>
+                </div>
+
+                <!-- After -->
+                <div class="md:col-span-5 bg-gradient-to-br from-blue-900 to-slate-800 p-8 rounded-2xl border border-blue-700 shadow-xl relative overflow-hidden">
+                    <div class="absolute top-0 right-0 bg-yellow-500 text-xs font-bold px-2 py-1 text-slate-900 rounded-bl-lg">資産化</div>
+                    <h3 class="text-xl font-bold text-white mb-6 text-center">After: 使える資産へ</h3>
+                    <div class="flex justify-center mb-6">
+                        <div class="bg-white/10 p-4 rounded-lg backdrop-blur-sm">
+                            <i class="fas fa-database text-4xl text-blue-400"></i>
+                        </div>
+                    </div>
+                    <ul class="space-y-3 text-white">
+                        <li class="flex items-center"><i class="fas fa-check text-green-400 mr-2 w-5"></i> まとまってスッキリ</li>
+                        <li class="flex items-center"><i class="fas fa-check text-green-400 mr-2 w-5"></i> 誰でも見える化</li>
+                        <li class="flex items-center"><i class="fas fa-check text-green-400 mr-2 w-5"></i> 何度でも再利用できる</li>
+                    </ul>
+                </div>
+
+            </div>
+            
+            <div class="text-center mt-12">
+                <a href="#contact" class="inline-block border border-slate-500 text-slate-300 hover:text-white hover:border-white px-8 py-3 rounded-full transition duration-300">
+                    今ある資料を活かす方法を見る
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. Service Content -->
+    <section class="py-20 bg-blue-50">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-2xl md:text-3xl font-bold text-slate-900 mb-6">
+                    「相談 → 整理 → 見える → 使える」
+                </h2>
+                <p class="text-slate-600">難しい言葉は使いません。シンプルな4つのステップです。</p>
+            </div>
+
+            <div class="grid md:grid-cols-4 gap-6 max-w-6xl mx-auto">
+                <!-- Step 1 -->
+                <div class="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition duration-300">
+                    <div class="text-4xl text-blue-500 mb-4"><i class="fas fa-comments"></i></div>
+                    <h3 class="font-bold text-lg mb-2">① 思考整理<br><span class="text-sm font-normal text-slate-500">(GPT対話)</span></h3>
+                    <p class="text-sm text-slate-600">AIとの優しい対話で、頭の中のモヤモヤを言葉にします。</p>
+                </div>
+                <!-- Step 2 -->
+                <div class="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition duration-300">
+                    <div class="text-4xl text-blue-500 mb-4"><i class="fas fa-project-diagram"></i></div>
+                    <h3 class="font-bold text-lg mb-2">② 情報統合<br><span class="text-sm font-normal text-slate-500">(Notebook型)</span></h3>
+                    <p class="text-sm text-slate-600">バラバラの情報を一つのノートに。関係性が一目で見えます。</p>
+                </div>
+                <!-- Step 3 -->
+                <div class="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition duration-300">
+                    <div class="text-4xl text-blue-500 mb-4"><i class="fas fa-mobile-alt"></i></div>
+                    <h3 class="font-bold text-lg mb-2">③ アプリ化<br><span class="text-sm font-normal text-slate-500">(HTMLツール)</span></h3>
+                    <p class="text-sm text-slate-600">整理した情報を、保存していつでも使える「アプリ」の形にします。</p>
+                </div>
+                <!-- Step 4 -->
+                <div class="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition duration-300">
+                    <div class="text-4xl text-blue-500 mb-4"><i class="fas fa-chart-pie"></i></div>
+                    <h3 class="font-bold text-lg mb-2">④ 実務化<br><span class="text-sm font-normal text-slate-500">(テンプレ化)</span></h3>
+                    <p class="text-sm text-slate-600">明日から使える資料や図解としてアウトプットします。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. Future Zone -->
+    <section class="py-20 bg-white">
+        <div class="container mx-auto px-6">
+            <div class="max-w-4xl mx-auto bg-white rounded-3xl p-8 md:p-12 border border-slate-100 shadow-xl relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-400 to-orange-400"></div>
+                
+                <h2 class="text-2xl md:text-3xl font-bold text-slate-900 mb-8 text-center">導入後、景色はどう変わる？</h2>
+                
+                <div class="grid md:grid-cols-2 gap-8 mb-10">
+                    <div class="space-y-4">
+                        <div class="flex items-center p-3 bg-slate-50 rounded-lg">
+                            <i class="fas fa-lightbulb text-orange-400 mr-3 text-xl"></i>
+                            <span class="font-bold text-slate-700">次の一手が明確に見える</span>
+                        </div>
+                        <div class="flex items-center p-3 bg-slate-50 rounded-lg">
+                            <i class="fas fa-feather-alt text-blue-400 mr-3 text-xl"></i>
+                            <span class="font-bold text-slate-700">やるべき事が軽くなる</span>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="flex items-center p-3 bg-slate-50 rounded-lg">
+                            <i class="fas fa-shoe-prints text-green-400 mr-3 text-xl"></i>
+                            <span class="font-bold text-slate-700">考えが前に進み始める</span>
+                        </div>
+                        <div class="flex items-center p-3 bg-slate-50 rounded-lg">
+                            <i class="fas fa-smile text-pink-400 mr-3 text-xl"></i>
+                            <span class="font-bold text-slate-700">一人で悩まなくなる</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-blue-50 p-6 rounded-xl text-center">
+                    <p class="text-lg text-slate-800">
+                        GPTは<span class="font-bold text-blue-600">「対話」</span>で思考を整理し、<br class="hidden md:block">
+                        アプリは<span class="font-bold text-blue-600">「保存」</span>で資産化する。<br>
+                        <span class="text-sm mt-3 block text-slate-500">この2つを一本につなぐことで、ビジネスは加速します。</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6. YoshiBon Role -->
+    <section class="py-20 bg-slate-50">
+        <div class="container mx-auto px-6">
+            <div class="max-w-3xl mx-auto flex flex-col md:flex-row items-center gap-10">
+                <div class="w-40 h-40 shrink-0 bg-white rounded-full overflow-hidden border-4 border-white shadow-lg flex items-center justify-center">
+                     <img src="spcファビコン.jpg" alt="Smile Plus Consulting Icon" class="w-full h-full object-cover">
+                </div>
+                <div class="text-left">
+                    <h2 class="text-2xl font-bold text-slate-900 mb-4">一緒に整理し、仕組みにする。</h2>
+                    <p class="text-slate-600 mb-4 leading-relaxed">
+                        私たちは、ただツールを導入する業者ではありません。<br>
+                        あなたの頭の中にあるアイデアを一緒に整理し、無理なく続けられる「仕組み」に落とし込む。
+                    </p>
+                    <p class="text-slate-600 mb-4 leading-relaxed">
+                        単なるAI導入ではなく、<strong class="text-slate-800 bg-orange-100 px-1">「考えが進む環境づくり」</strong>を隣で支える伴走者でありたいと考えています。
+                    </p>
+                    <p class="font-bold text-slate-800">
+                        Smile Plus Consulting
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 7. Final CTA -->
+    <section id="contact" class="py-24 bg-white relative overflow-hidden">
+        <div class="container mx-auto px-6 relative z-10 text-center">
+            <h2 class="text-3xl md:text-4xl font-bold text-slate-900 mb-6">
+                考えるを、ひとりにしない。
+            </h2>
+            <p class="text-xl text-slate-600 mb-10">
+                まずは気軽に、お茶を飲むような感覚で相談してください🙂
             </p>
 
-            <div className="btn-row" style={{ marginTop: '32px', justifyContent: 'center' }}>
-              <button onClick={() => setShowModal(true)} className="btn btn-primary">
-                メールで相談する
-                <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" style={{ width:'20px', height:'20px' }}>
-                  <rect x="2" y="4" width="20" height="16" rx="2"></rect>
-                  <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
-                </svg>
-              </button>
+            <div class="grid md:grid-cols-2 gap-6 max-w-2xl mx-auto mb-10">
+                <!-- Option 1: Zoom -->
+                <!-- hrefにはお問い合わせフォームのURLを入れる -->
+                <a href="https://www.smileplusctg.com/contact" target="_blank" class="block bg-slate-50 hover:bg-blue-50 px-6 py-6 rounded-xl border border-slate-200 hover:border-blue-400 hover:shadow-lg transition group text-left">
+                    <div class="flex items-center mb-2">
+                        <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 mr-4 group-hover:scale-110 transition">
+                            <i class="fas fa-video"></i>
+                        </div>
+                        <span class="text-slate-500 text-sm font-bold">オンラインで</span>
+                    </div>
+                    <div class="text-lg font-bold text-slate-800 group-hover:text-blue-700">
+                        無料Zoom相談を予約
+                        <i class="fas fa-arrow-right text-sm ml-2 opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                    </div>
+                    <p class="text-xs text-slate-400 mt-2">※お問い合わせフォームへ移動します</p>
+                </a>
 
-              <button onClick={copyToClipboard} className="btn btn-secondary">
-                <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" style={{ width:'20px', height:'20px' }}>
-                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                </svg>
-                相談テンプレをコピー
-              </button>
+                <!-- Option 2: Demo -->
+                <!-- hrefには診断アプリURLを入れる -->
+                <a href="https://spc-jp.github.io/ai-started-guide-apl/" target="_blank" class="block bg-slate-50 hover:bg-orange-50 px-6 py-6 rounded-xl border border-slate-200 hover:border-orange-400 hover:shadow-lg transition group text-left">
+                    <div class="flex items-center mb-2">
+                        <div class="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center text-orange-600 mr-4 group-hover:scale-110 transition">
+                            <i class="fas fa-laptop"></i>
+                        </div>
+                        <span class="text-slate-500 text-sm font-bold">実際に触って</span>
+                    </div>
+                    <div class="text-lg font-bold text-slate-800 group-hover:text-orange-700">
+                        何から始めるかを、5分で決める
+                        <i class="fas fa-arrow-right text-sm ml-2 opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                    </div>
+                    <p class="text-xs text-slate-400 mt-2">※登録不要ですぐ試せます</p>
+                </a>
             </div>
 
-            <div className="copy-area" style={{ textAlign:'left', marginTop:'32px', padding:'24px', background:'#0F172A', color:'#CBD5E1', borderRadius:'16px', fontFamily:'monospace', fontSize:'13px', lineHeight:1.7 }}>
-              <span style={{ color:'#fff', display:'block', marginBottom:'12px', fontSize:'14px', fontWeight: 800 }}>相談テンプレ（コピペOK）</span>
-              1 いま困っていること：<br/>
-              2 現状の状況：<br/>
-              3 こうなったら嬉しい：<br/>
-              4 期限や優先度：<br/>
-              5 参考URLや資料（あれば）：<br/>
-              6 最初はどこから一緒に整えたいか：（思考／365／実務／発信）
+            <!-- Main CTA (Fallback or Primary Action) -->
+             <div class="inline-block relative">
+                 <div class="absolute -top-3 -right-3 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full animate-bounce">
+                     おすすめ
+                 </div>
+                 <a href="https://www.smileplusctg.com/contact" target="_blank" class="inline-flex items-center justify-center px-10 py-5 text-xl font-bold text-white transition-all duration-200 bg-orange-500 rounded-full hover:bg-orange-600 hover:shadow-xl hover:-translate-y-1 shadow-lg shadow-orange-200">
+                    今のモヤっとを整理する（Zoom予約）
+                    <i class="fas fa-chevron-right ml-3"></i>
+                </a>
             </div>
-          </div>
-
-          {showModal && (
-            <div style={{
-              position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)',
-              zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px'
-            }} onClick={(e) => e.target === e.currentTarget && setShowModal(false)}>
-
-              <div style={{
-                background: 'rgba(255,255,255,0.95)', borderRadius: '20px', width: '100%', maxWidth: '400px', padding: '32px',
-                position: 'relative', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)'
-              }}>
-                <button
-                  onClick={() => setShowModal(false)}
-                  style={{ position: 'absolute', top: '20px', right: '20px', background: 'none', border: 'none', fontSize: '24px', color: '#94a3b8', cursor: 'pointer', lineHeight: 1 }}
-                >×</button>
-
-                <h3 style={{ margin: '0 0 24px', fontSize: '18px', fontWeight: 900, textAlign: 'center', color: '#0F172A' }}>メール送信設定</h3>
-
-                <div style={{ marginBottom: '24px' }}>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: 800, color: '#475569', marginBottom: '8px', textAlign:'left' }}>送信先 (To)</label>
-                  <input type="text" value={emailTo} readOnly style={{ width: '100%', padding: '12px', border: '1px solid rgba(15,23,42,0.10)', borderRadius: '12px', fontSize: '14px', background: 'rgba(15,23,42,0.03)', color: '#0F172A', boxSizing:'border-box' }} />
-                  <p style={{ fontSize: '11px', color: '#64748b', marginTop: '4px', textAlign:'left' }}>ご自身のメーラーが起動します</p>
-                </div>
-
-                <button
-                  onClick={handleGmail}
-                  style={{
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', width: '100%', padding: '14px',
-                    background: 'linear-gradient(135deg, rgba(34,211,238,1) 0%, rgba(14,165,233,1) 60%, rgba(30,64,175,1) 140%)',
-                    color: '#fff', fontWeight: 900, borderRadius: '12px', border: 'none', cursor: 'pointer', marginBottom: '16px'
-                  }}
-                >
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" style={{ width:'20px', height:'20px' }}>
-                    <rect x="2" y="4" width="20" height="16" rx="2"></rect>
-                    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
-                  </svg>
-                  Gmailで作成
-                </button>
-
-                <div style={{ textAlign: 'center' }}>
-                   <button onClick={handleStandard} style={{ background:'none', border:'none', fontSize: '12px', color: '#475569', textDecoration: 'underline', cursor: 'pointer' }}>
-                     標準メーラーで起動
-                   </button>
-                </div>
-              </div>
-            </div>
-          )}
+            
+            <p class="mt-8 text-slate-600 font-medium">
+                考えるを、ひとりにしない。<br>
+                あなたの次の一歩、ここから
+            </p>
         </div>
-      );
-    };
+    </section>
 
-    const root = ReactDOM.createRoot(document.getElementById('contact-root'));
-    root.render(<ContactForm />);
-  </script>
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 py-8 text-center text-sm">
+        <div class="container mx-auto px-6">
+            <p>&copy; Smile Plus Consulting. All rights reserved.</p>
+        </div>
+    </footer>
+
 </body>
 </html>
